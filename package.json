@@ -1,0 +1,22 @@
+{
+  "name": "csocket",
+  "version": "1.0.0",
+  "description": "Port for C's `sys/socket.h` methods for synchronous usage of sockets as file descriptors.",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/puresec/node-csocket.git"
+  },
+  "author": "Oded Niv",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/puresec/node-csocket/issues"
+  },
+  "homepage": "https://github.com/puresec/node-csocket#readme",
+  "dependencies": {
+    "node-gyp-build": "^3.5.1"
+  },
+  "devDependencies": {
+    "nan": "^2.11.1"
+  }
+}
