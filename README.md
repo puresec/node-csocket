@@ -48,6 +48,14 @@ let buffer = new Buffer(4096);
 let bytesReceived = csocket.read(socketFd, buffer, TIMEOUT);
 // bytesReceived <= 3
 // buffer == <Buffer 01 02 03 00 00 00 ... >
+
+/*
+ * Always close the file descriptor (not from this library, no "close" in sys/socket.h).
+ * The kernel might not immediately close the socket when the process exits,
+ *   and NodeJS won't close it during garbage collection.
+ */
+const fs = require('fs');
+fs.close(socketFd);
 ```
 
 ### Switching to normal NodeJS operations

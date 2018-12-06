@@ -2,3 +2,5 @@ node_modules/
 build/
 dist/
 prebuilds/
+.nyc_output/
+coverage/

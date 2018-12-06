@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Port for C's `sys/socket.h` methods for synchronous usage of sockets as file descriptors.",
   "main": "src/index.js",
+  "scripts": {
+    "test": "nyc --reporter=lcov --reporter=text --reporter=html mocha --recursive test/unit/ && eslint src/ test/"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/puresec/node-csocket.git"
@@ -17,6 +20,12 @@
     "node-gyp-build": "^3.5.1"
   },
   "devDependencies": {
-    "nan": "^2.11.1"
+    "@puresec/eslint-config-base": "^1.0.0",
+    "chai": "^4.2.0",
+    "eslint": "^5.9.0",
+    "get-port": "^4.0.0",
+    "mocha": "^5.2.0",
+    "nan": "^2.11.1",
+    "nyc": "^13.1.0"
   }
 }
