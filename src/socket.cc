@@ -38,9 +38,9 @@ NAN_METHOD(socket) {
 
 // bind(fd, host, port)
 NAN_METHOD(bind) {
-  int fd = info[0]->ToInteger()->Value();
+  int fd = Nan::To<v8::Integer>(info[0]).ToLocalChecked()->Value();
   Nan::Utf8String host(info[1]->ToString());
-  int port = info[2]->ToInteger()->Value();
+  int port = Nan::To<v8::Integer>(info[2]).ToLocalChecked()->Value();
 
   sockaddr_in addr = sockaddr_from_host_and_port(*host, port);
   if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
@@ -50,8 +50,8 @@ NAN_METHOD(bind) {
 
 // listen(fd, backlog)
 NAN_METHOD(listen) {
-  int fd = info[0]->ToInteger()->Value();
-  int backlog = info[1]->ToInteger()->Value();
+  int fd = Nan::To<v8::Integer>(info[0]).ToLocalChecked()->Value();
+  int backlog = Nan::To<v8::Integer>(info[1]).ToLocalChecked()->Value();
 
   if (listen(fd, backlog) < 0) {
     Nan::ThrowError(Nan::ErrnoException(errno, "listen", strerror(errno)));
@@ -60,11 +60,12 @@ NAN_METHOD(listen) {
 
 // accept(fd, timeout) => fd
 NAN_METHOD(accept) {
-  int fd = info[0]->ToInteger()->Value();
+  int fd = Nan::To<v8::Integer>(info[0]).ToLocalChecked()->Value();
   struct timeval tv;
   if (info[1]->IsNumber()) {
-    tv.tv_sec = info[1]->ToNumber()->Value();
-    tv.tv_usec = (info[1]->ToNumber()->Value() - (long)info[1]->ToNumber()->Value()) * 1000000;
+    double timeout = Nan::To<v8::Number>(info[1]).ToLocalChecked()->Value();
+    tv.tv_sec = timeout;
+    tv.tv_usec = (timeout - (long)timeout) * 1000000;
   } else {
     tv.tv_sec = tv.tv_usec = 0;
   }
@@ -87,9 +88,9 @@ NAN_METHOD(accept) {
 
 // connect(fd, host, port)
 NAN_METHOD(connect) {
-  int fd = info[0]->ToInteger()->Value();
+  int fd = Nan::To<v8::Integer>(info[0]).ToLocalChecked()->Value();
   Nan::Utf8String host(info[1]->ToString());
-  unsigned short port = info[2]->ToInteger()->Value();
+  unsigned short port = Nan::To<v8::Integer>(info[2]).ToLocalChecked()->Value();
 
   sockaddr_in addr = sockaddr_from_host_and_port(*host, port);
   if (connect(fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
@@ -99,13 +100,14 @@ NAN_METHOD(connect) {
 
 // recv(fd, buffer, timeout) => bytes received
 NAN_METHOD(recv) {
-  int fd = info[0]->ToInteger()->Value();
-  char* buffer = node::Buffer::Data(info[1]->ToObject());
-  ssize_t length = node::Buffer::Length(info[1]->ToObject());
+  int fd = Nan::To<v8::Integer>(info[0]).ToLocalChecked()->Value();
+  char* buffer = node::Buffer::Data(Nan::To<v8::Object>(info[1]).ToLocalChecked());
+  ssize_t length = node::Buffer::Length(Nan::To<v8::Object>(info[1]).ToLocalChecked());
   struct timeval tv;
   if (info[2]->IsNumber()) {
-    tv.tv_sec = info[2]->ToNumber()->Value();
-    tv.tv_usec = (info[2]->ToNumber()->Value() - (long)info[2]->ToNumber()->Value()) * 1000000;
+    double timeout = Nan::To<v8::Number>(info[2]).ToLocalChecked()->Value();
+    tv.tv_sec = timeout;
+    tv.tv_usec = (timeout - (long)timeout) * 1000000;
   } else {
     tv.tv_sec = tv.tv_usec = 0;
   }
@@ -128,13 +130,14 @@ NAN_METHOD(recv) {
 
 // send(fd, buffer, timeout) => bytes sent
 NAN_METHOD(send) {
-  int fd = info[0]->ToInteger()->Value();
-  char* buffer = node::Buffer::Data(info[1]->ToObject());
-  ssize_t length = node::Buffer::Length(info[1]->ToObject());
+  int fd = Nan::To<v8::Integer>(info[0]).ToLocalChecked()->Value();
+  char* buffer = node::Buffer::Data(Nan::To<v8::Object>(info[1]).ToLocalChecked());
+  ssize_t length = node::Buffer::Length(Nan::To<v8::Object>(info[1]).ToLocalChecked());
   struct timeval tv;
   if (info[2]->IsNumber()) {
-    tv.tv_sec = info[2]->ToNumber()->Value();
-    tv.tv_usec = (info[2]->ToNumber()->Value() - (long)info[2]->ToNumber()->Value()) * 1000000;
+    double timeout = Nan::To<v8::Number>(info[2]).ToLocalChecked()->Value();
+    tv.tv_sec = timeout;
+    tv.tv_usec = (timeout - (long)timeout) * 1000000;
   } else {
     tv.tv_sec = tv.tv_usec = 0;
   }
