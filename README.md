@@ -1,9 +1,9 @@
-# csocket
+# csocket-linux
 
 Port for C's `sys/socket.h` methods for synchronous usage of sockets as file descriptors.
 
-This package uses a native node module so it is compiled on your machine.
-For using the module prebuilt for Linux, see [csocket-linux](https://www.npmjs.com/package/csocket-linux).
+This package uses a native node module that is precompiled for Linux.
+To compile the module on installation, see [csocket](https://www.npmjs.com/package/csocket).
 
 It is not recommended to make synchronous operations in NodeJS since there is only one thread
 and blocking it prevents the event loop from going, and any asynchronous operations will not
@@ -15,13 +15,13 @@ to minimize this risk.
 Install using:
 
 ```bash
-npm install --save csocket
+npm install --save csocket-linux
 ```
 
 Then in NodeJS:
 
 ```javascript
-const csocket = require('csocket');
+const csocket = require('csocket-linux');
 
 const PORT = 1234;
 const TIMEOUT = 5; // in seconds (allows floating point), undefined/null/0 for no timeout
@@ -62,7 +62,7 @@ At any point you can use the file descriptor with NodeJS libraries that follow
 the asynchronous way NodeJS is supposed to work with, like `fs` and `net`.
 
 ```javascript
-const csocket = require('csocket');
+const csocket = require('csocket-linux');
 
 let socketfd = csocket.socket();
 

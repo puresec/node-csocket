@@ -1,11 +1,18 @@
 {
-  "name": "csocket",
+  "name": "csocket-linux",
   "version": "1.0.0",
   "description": "Port for C's `sys/socket.h` methods for synchronous usage of sockets as file descriptors.",
   "main": "src/index.js",
   "scripts": {
-    "test": "nyc --reporter=lcov --reporter=text --reporter=html mocha --recursive test/unit/ && eslint src/ test/"
+    "install": "node-gyp-build-optional",
+    "test": "nyc --reporter=lcov --reporter=text --reporter=html mocha --recursive test/unit/ && eslint src/ test/",
+    "prebuildify": "prebuildify --target node@4.3.2 --target node@6.10.3 --target node@8.10.0 --strip",
+    "prepack": "docker run --volume `pwd`:/src --workdir /src node npm run prebuildify"
   },
+  "files": [
+    "src/",
+    "prebuilds/"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/puresec/node-csocket.git"
@@ -26,6 +33,7 @@
     "get-port": "^4.0.0",
     "mocha": "^5.2.0",
     "nan": "^2.11.1",
-    "nyc": "^13.1.0"
+    "nyc": "^13.1.0",
+    "prebuildify": "^2.9.1"
   }
 }
