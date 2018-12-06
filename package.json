@@ -1,6 +1,6 @@
 {
   "name": "csocket-linux",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Port for C's `sys/socket.h` methods for synchronous usage of sockets as file descriptors.",
   "main": "src/index.js",
   "scripts": {
