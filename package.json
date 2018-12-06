@@ -6,6 +6,10 @@
   "scripts": {
     "test": "nyc --reporter=lcov --reporter=text --reporter=html mocha --recursive test/unit/ && eslint src/ test/"
   },
+  "files": [
+    "src/",
+    "binding.gyp"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/puresec/node-csocket.git"
