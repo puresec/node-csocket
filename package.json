@@ -4,10 +4,9 @@
   "description": "Port for C's `sys/socket.h` methods for synchronous usage of sockets as file descriptors.",
   "main": "src/index.js",
   "scripts": {
-    "install": "node-gyp-build-optional",
     "test": "nyc --reporter=lcov --reporter=text --reporter=html mocha --recursive test/unit/ && eslint src/ test/",
     "prebuildify": "prebuildify --target node@4.3.2 --target node@6.10.3 --target node@8.10.0 --strip",
-    "prepack": "docker run --volume `pwd`:/src --workdir /src node npm run prebuildify"
+    "prepack": "docker run --volume `pwd`:/src --workdir /src node:11 npm run prebuildify"
   },
   "files": [
     "src/",
