@@ -3,14 +3,12 @@
 Port for C's `sys/socket.h` methods for synchronous usage of sockets as file descriptors.
 
 This package uses a native node module so it is compiled on your machine.
-For using the module prebuilt for Linux, see [csocket-linux](https://github.com/puresec/node-csocket/tree/linux).
+For using the module prebuilt for Linux, see [csocket-linux](https://www.npmjs.com/package/csocket-linux).
 
 It is not recommended to make synchronous operations in NodeJS since there is only one thread
 and blocking it prevents the event loop from going, and any asynchronous operations will not
 be done. See [Switching to normal NodeJS operations](#switching-to-normal-nodejs-operations)
 to minimize this risk.
-
-## Install
 
 ## Usage
 
