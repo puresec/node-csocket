@@ -5,6 +5,10 @@ const fs = require('fs');
 const net = require('net');
 const getPort = require('get-port');
 
+function hrtimeToMillis(hrtime) {
+  return (hrtime[0] * 1000) + (hrtime[1] / 1000000);
+}
+
 describe('csocket', function() {
   // can't use this because afterEach doesn't have access to variables
   // set inside the tests
@@ -67,20 +71,23 @@ describe('csocket', function() {
     it("returns a closeable file descriptor without timeout", function(done) {
       net.createConnection(this.port, () => {
         let socketFd = csocket.accept(this.fd);
-        fs.close(socketFd);
+        fs.close(socketFd, () => {});
       }).on('end', done);
     });
 
     it("returns a closeable file descriptor with timeout", function(done) {
       net.createConnection(this.port, () => {
-        let socketFd = csocket.accept(this.fd, 0.01);
-        fs.close(socketFd);
+        let socketFd = csocket.accept(this.fd, 10);
+        fs.close(socketFd, () => {});
       }).on('end', done);
     });
 
     it("times out with no connection", function() {
-      expect(() => csocket.accept(this.fd, 0.01))
+      let start = process.hrtime();
+      expect(() => csocket.accept(this.fd, 10))
         .to.throw("timeout");
+      expect(hrtimeToMillis(process.hrtime(start)))
+        .to.be.within(10, 12);
     });
 
     it("throws an error on failure", function(done) {
@@ -101,7 +108,7 @@ describe('csocket', function() {
         })
         .on('connection', (socket) => {
           server.close();
-          fs.close(this.fd);
+          fs.close(this.fd, () => {});
           closed = true;
           socket.on('end', done); // ensuring they are connected by identifying close
         });
@@ -140,7 +147,7 @@ describe('csocket', function() {
     it("receives with timeout", function(done) {
       this.socket.write(new Buffer([1, 2, 3]), () => {
         let buffer = new Buffer(4);
-        expect(csocket.recv(this.fd, buffer, 0.01))
+        expect(csocket.recv(this.fd, buffer, 10))
           .to.equal(3);
         expect(buffer)
           .to.deep.equal(new Buffer([1, 2, 3, 0 /* extra byte */]));
@@ -150,8 +157,11 @@ describe('csocket', function() {
 
     it("times out with no data", function() {
       let buffer = new Buffer(4);
-      expect(() => csocket.recv(this.fd, buffer, 0.01))
+      let start = process.hrtime();
+      expect(() => csocket.recv(this.fd, buffer, 10))
         .to.throw("timeout");
+      expect(hrtimeToMillis(process.hrtime(start)))
+        .to.be.within(10, 12);
     });
 
     it("doesn't overflow", function(done) {
@@ -206,7 +216,7 @@ describe('csocket', function() {
     });
 
     it("sends with timeout", function(done) {
-      expect(csocket.send(this.fd, new Buffer([1, 2, 3]), 0.01))
+      expect(csocket.send(this.fd, new Buffer([1, 2, 3]), 10))
         .to.equal(3);
       this.socket
         .on('data', function(data) {

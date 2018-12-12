@@ -22,6 +22,18 @@ sockaddr_in sockaddr_from_host_and_port(char* host, int port) {
   return addr;
 }
 
+timeval timeval_from_val(v8::Local<v8::Value> val) {
+  struct timeval tv;
+  if (val->IsNumber()) {
+    double timeout = Nan::To<v8::Number>(val).ToLocalChecked()->Value();
+    tv.tv_sec = timeout / 1000;
+    tv.tv_usec = ((timeout / 1000) - (double)tv.tv_sec) * 1000000;
+  } else {
+    tv.tv_sec = tv.tv_usec = 0;
+  }
+  return tv;
+}
+
 /*
  * Exported
  */
@@ -61,14 +73,7 @@ NAN_METHOD(listen) {
 // accept(fd, timeout) => fd
 NAN_METHOD(accept) {
   int fd = Nan::To<v8::Integer>(info[0]).ToLocalChecked()->Value();
-  struct timeval tv;
-  if (info[1]->IsNumber()) {
-    double timeout = Nan::To<v8::Number>(info[1]).ToLocalChecked()->Value();
-    tv.tv_sec = timeout;
-    tv.tv_usec = (timeout - (long)timeout) * 1000000;
-  } else {
-    tv.tv_sec = tv.tv_usec = 0;
-  }
+  struct timeval tv = timeval_from_val(info[1]);
 
   fd_set rfds;
   FD_ZERO(&rfds);
@@ -103,14 +108,7 @@ NAN_METHOD(recv) {
   int fd = Nan::To<v8::Integer>(info[0]).ToLocalChecked()->Value();
   char* buffer = node::Buffer::Data(Nan::To<v8::Object>(info[1]).ToLocalChecked());
   ssize_t length = node::Buffer::Length(Nan::To<v8::Object>(info[1]).ToLocalChecked());
-  struct timeval tv;
-  if (info[2]->IsNumber()) {
-    double timeout = Nan::To<v8::Number>(info[2]).ToLocalChecked()->Value();
-    tv.tv_sec = timeout;
-    tv.tv_usec = (timeout - (long)timeout) * 1000000;
-  } else {
-    tv.tv_sec = tv.tv_usec = 0;
-  }
+  struct timeval tv = timeval_from_val(info[2]);
 
   fd_set rfds;
   FD_ZERO(&rfds);
@@ -133,14 +131,7 @@ NAN_METHOD(send) {
   int fd = Nan::To<v8::Integer>(info[0]).ToLocalChecked()->Value();
   char* buffer = node::Buffer::Data(Nan::To<v8::Object>(info[1]).ToLocalChecked());
   ssize_t length = node::Buffer::Length(Nan::To<v8::Object>(info[1]).ToLocalChecked());
-  struct timeval tv;
-  if (info[2]->IsNumber()) {
-    double timeout = Nan::To<v8::Number>(info[2]).ToLocalChecked()->Value();
-    tv.tv_sec = timeout;
-    tv.tv_usec = (timeout - (long)timeout) * 1000000;
-  } else {
-    tv.tv_sec = tv.tv_usec = 0;
-  }
+  struct timeval tv = timeval_from_val(info[2]);
 
   fd_set rfds;
   FD_ZERO(&rfds);
