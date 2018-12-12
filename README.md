@@ -24,7 +24,7 @@ Then in NodeJS:
 const csocket = require('csocket');
 
 const PORT = 1234;
-const TIMEOUT = 5; // in seconds (allows floating point), undefined/null/0 for no timeout
+const TIMEOUT = 5000; // in milliseconds (allows floating point), undefined/null/0 for no timeout
 
 /* TCP Server */
 const BIND_HOST = '127.0.0.1'; // use 0.0.0.0 for all interfaces
@@ -52,8 +52,9 @@ let bytesReceived = csocket.read(socketFd, buffer, TIMEOUT);
  * The kernel might not immediately close the socket when the process exits,
  *   and NodeJS won't close it during garbage collection.
  */
-const fs = require('fs');
-fs.close(socketFd);
+const net = require('net');
+net.createServer().listen({ fd: listenerFd }).close();
+new net.Socket({ fd: socketFd }).end();
 ```
 
 ### Switching to normal NodeJS operations
@@ -63,14 +64,34 @@ the asynchronous way NodeJS is supposed to work with, like `fs` and `net`.
 
 ```javascript
 const csocket = require('csocket');
+const net = require('net');
 
 let socketfd = csocket.socket();
 
 ...
 
-const fs = require('fs');
-fs.read(socketFd, ...);
+/* TCP Server */
+let server = net.createServer().listen({ fd: socketFd });
 
-const net = require('net');
+/* TCP Client */
 let socket = new net.Socket({ fd: socketFd });
 ```
+
+#### Important note
+
+Once you are done with your synchronous operations (receiving, writing, accepting, etc)
+you should always create a `net.Socket`/`net.Server` and let NodeJS handle the file descriptor's lifecycle.
+
+According to my experience, if you don't pass the file descriptor to NodeJS the socket may not
+close properly, and may cause a port to stay bound or the process to hang (even if using `fs.close`).
+
+Only do that after you finish using `csocket`, otherwise you may race condition with NodeJS
+over accepts/reads/etc.
+
+### Implementation notes
+
+* Currently `csocket.socket()` only creates a socket for TCP/IPv4 (`AF_INET/SOCK_STREAM`). PRs are welcome.
+* Not all `sys/socket.h` operations are implemented, only the bare minimum needed to communicate. PRs are welcome.
+* Allowing a timeout is actually implemented using the `select`,
+  I cannot fathom why other I/O implementations don't expose this functionallity,
+  blocking I/O functions are unusuable without it.
