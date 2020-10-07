@@ -51,7 +51,8 @@ NAN_METHOD(socket) {
 // bind(fd, host, port)
 NAN_METHOD(bind) {
   int fd = Nan::To<v8::Integer>(info[0]).ToLocalChecked()->Value();
-  Nan::Utf8String host(info[1]->ToString());
+  v8::Local<v8::Context> context = info.GetIsolate()->GetCurrentContext();
+  Nan::Utf8String host(info[1]->ToString(context).ToLocalChecked());
   int port = Nan::To<v8::Integer>(info[2]).ToLocalChecked()->Value();
 
   sockaddr_in addr = sockaddr_from_host_and_port(*host, port);
@@ -94,7 +95,8 @@ NAN_METHOD(accept) {
 // connect(fd, host, port)
 NAN_METHOD(connect) {
   int fd = Nan::To<v8::Integer>(info[0]).ToLocalChecked()->Value();
-  Nan::Utf8String host(info[1]->ToString());
+  v8::Local<v8::Context> context = info.GetIsolate()->GetCurrentContext();
+  Nan::Utf8String host(info[1]->ToString(context).ToLocalChecked());
   unsigned short port = Nan::To<v8::Integer>(info[2]).ToLocalChecked()->Value();
 
   sockaddr_in addr = sockaddr_from_host_and_port(*host, port);
